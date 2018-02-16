@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Block Chat</title>
+  <link rel="stylesheet" type="text/css" href="css/css.css">
+</head>
+<body>
+  <h1>Block Chat</h1>
+
+  <div>
+    <p>Account: <span id="ethAccountID"></span></p>
+    <div class="user_name_container">
+      <p>User name: <span id="user_name"></span></p> 
+      <input
+        type="text"
+        name="username_input"
+        id="username_input"
+        placeholder="Set username"
+      />
+      <button id="set_username_btn">Set username</button>
+    </div>
+    <p>Current Balance <span id="currentBalance"></span></p>
+  </div>
+
+  <h3>Rooom <span id="current_room"></span></h3>
+
+  <div id="room_manager">
+    <div id="create_room_container">
+      <input
+        type="text"
+        name="new_room_input"
+        id="new_room_name_input"
+      />
+
+      <button id="make_new_room_btn">Create Room!</button>
+    </div>
+    <div id="rooms_available">
+      <h4>Rooms List</h4>
+      <ul id="rooms_list">
+<!--         <li>one</li>
+        <li>two</li>
+        <li>three</li> -->
+      </ul>
+
+    </div>
+
+    
+  </div>
+
+  <div id="chat_box_container">
+    <div id="chat_box">
+      
+    </div>
+    <div id="users">
+      <h4>Users List</h4>
+
+      <ul id="user_list">
+
+      </ul>
+
+    </div>
+
+    <div id="chat_input_contianer">
+      <input
+        type="text"
+        name="chat_input"
+        id='chat_input'
+      />
+
+      <button id="send_chat_btn">Send It!</button>
+    </div>
+  </div>
+  <script src="js/jquery.dev.js"></script>
+  <script src="js/web3.js"></script>
+
+  <script src="js/truffle-contract.js"></script>
+
+  <script src="js/js.js"></script>
+</body>
+</html>
