@@ -9,7 +9,7 @@ contract BlockChat{
     mapping (string=>uint) chats_per_room;
 
     event User_joined(string _name);
-    event New_chat_room_created(string _room);
+    event New_chat_room_created(string _room, address _addr);
     event New_chat_message(string _room, string _name, uint _id_index, string _message);
     
     
@@ -29,7 +29,7 @@ contract BlockChat{
         chats_per_room[_room] = 0;
         room_array.push(_room);
         room_count++;
-        New_chat_room_created(_room);
+        New_chat_room_created(_room, msg.sender);
         
     }
 

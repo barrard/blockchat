@@ -35,7 +35,7 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('BlockChat.json', function(data) {
+    $.getJSON('bc.json', function(data) {
     // $.getJSON('TimeClock.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract
       App.contracts.BlockChat = TruffleContract(data);
@@ -102,10 +102,10 @@ App = {
       callback(_room)
     })
   },
-  append_room_to_list:function(_room){
+  append_room_to_list:function(_room, _sender){
     var rooms_list = $('#rooms_list')
     rooms_list.append(
-      `<li onclick=App.set_room("${_room}")>${_room}</li>`
+      `<li data-sender="${_sender}"onclick=App.set_room("${_room}")>${_room}</li>`
       )
 
   },
@@ -140,10 +140,16 @@ App = {
       return instance.add_new_chatroom(_new_chatroom_name, {from:App.account, gas: "2000000", gasPrice:"2000000000"})
       }).then(function(data){
         console.log(data)
+        var logs = data.logs[0].args
+        var _sender = logs._addr
+        var _room = logs._room
+        App.append_room_to_list(_room, _sender)
+
       }).catch(function(e){
         console.log(e)
       })
     },
+
     add_message:function(_room, _message){
       App.contracts.BlockChat.deployed().then(function(instance){
         return instance.add_message(_room, _message, {from:App.account, gas: "2000000", gasPrice:"2000000000"})
