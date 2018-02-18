@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Block Chat</title>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <link rel="stylesheet" type="text/css" href="css/css.css">
 </head>
 <body>
@@ -27,7 +28,7 @@
 
   <div id="room_manager">
     <div id="create_room_container">
-      <input
+      <input id="new_room_name_input"
 
       />
 
@@ -45,16 +46,11 @@
   </div>
 
   <div id="chat_box_container">
-    <div id="chat_box">
-      
-    </div>
+
+    <div id="chat_box"></div>
     <div id="users">
       <h4>Users List</h4>
-
-      <ul id="user_list">
-
-      </ul>
-
+      <ul id="user_list"></ul>
     </div>
 
     <div id="chat_input_contianer">
@@ -63,15 +59,19 @@
         name="chat_input"
         id='chat_input'
       />
-
       <button id="send_chat_btn">Send It!</button>
     </div>
   </div>
-  <script src="js/jquery.dev.js"></script>
+  <!-- <script src="js/jquery.dev.js"></script> -->
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
   <script src="js/web3.js"></script>
+  <script src="js/no_truffle.js"></script>
+  <!-- <script src="js/truffle-contract.js"></script> -->
 
-  <script src="js/truffle-contract.js"></script>
-
-  <script src="js/js.js"></script>
+  <!-- <script src="js/js.js"></script> -->
 </body>
 </html>

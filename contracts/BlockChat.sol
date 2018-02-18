@@ -8,9 +8,9 @@ contract BlockChat{
     mapping (address=>string) address_to_name;
     mapping (string=>uint) chats_per_room;
 
-    event User_joined(string _name);
+    event User_joined(address _addr, string _name);
     event New_chat_room_created(string _room, address _addr);
-    event New_chat_message(string _room, string _name, uint _id_index, string _message);
+    event New_chat_message(string _room, string _name, uint _id_index, string _message, uint _time);
     
     
     struct Chat_object{
@@ -44,7 +44,7 @@ contract BlockChat{
     
     function add_name(string _name) public{
         address_to_name[msg.sender] = _name;
-        User_joined(_name);
+        User_joined(msg.sender, _name);
     }
     function get_username(address _addr) public view returns(string){
         return address_to_name[_addr];
@@ -58,7 +58,7 @@ contract BlockChat{
         new_chat_obj._name = address_to_name[msg.sender];
         new_chat_obj._time = now;
         new_chat_obj._message = _message;
-        New_chat_message(_chat_room, new_chat_obj._name, _chat_count, _message );
+        New_chat_message(_chat_room, new_chat_obj._name, _chat_count, _message, new_chat_obj._time );
         _chat_count++;
         chats_per_room[_chat_room] = _chat_count;
         

@@ -1,3 +1,5 @@
+toastr.options.progressBar = true;
+
 App = {
   web3Provider: null,
   contracts: {},
@@ -35,7 +37,7 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('bc.json', function(data) {
+    $.getJSON('BlockChat.json', function(data) {
     // $.getJSON('TimeClock.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract
       App.contracts.BlockChat = TruffleContract(data);
@@ -82,6 +84,7 @@ App = {
     }).then(function(_room_count){
       var room_count = _room_count.toNumber()
       console.log('Room count :'+ room_count)
+      toastr.success('Room Count '+room_count)
       for(let x = 0 ; x < room_count; x++){
         App.get_room_by_index(x, function(result){
           console.log(result)
@@ -91,6 +94,7 @@ App = {
 
       }
     }).catch(function(e){
+      toastr.error(e, 'Failed to get all employees')
       console.log('error.....')
       console.log(e)
     })
