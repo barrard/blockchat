@@ -1,16 +1,15 @@
 toastr.options.progressBar = true;
-console.log('hello')
-
 App = {
   web3Provider: null,
   contracts: {},
   address:{
-    BlockChat:"0xb9c94405f99d271aac1f86ae882cd79c08c555ee"
+    // BlockChat:"0xe52ae8afac99cef4658a895880af4cd05a4c6204"
+    BlockChat:"0x8e7F76158c681ed4aF55EeB5438FCAA19Fa55BC8"//Rinkeby
   },
   abi:{},
   account:'',
   room_list:[],
-  current_room:'one',
+  current_room:'',
   username:'',
   users:{},
   current_block_event:0,
@@ -33,35 +32,45 @@ App = {
         $('#ethAccountID').html(r[0])
         App.account = r[0];
         web3.eth.getBalance(r[0].toString(),function(e, r){
-          console.log(e)
+          if(e){console.log(e)}
           console.log(r.toNumber())
           $('#currentBalance').html(web3.fromWei(r.toNumber()))
           return App.initContract();
 
         })
       })
-
   },
-
   initContract: function() {
     $.getJSON('BlockChat.json', function(data) {
       App.abi.BlockChat = web3.eth.contract(data)
       App.contracts.BlockChat = App.abi.BlockChat.at(App.address.BlockChat)
-
-
       App.list_all_rooms()
       App.get_username(App.account)
-
-      console.log('this is working!!!!')
+      App.get_private_messages()
       return App.set_UI();
-    });
-    
-    
+    });  
+  },
+  get_private_messages:function(){
+    App.contracts.BlockChat.get_private_message_count.call( {from:App.account}, function(e, _message_count){
+      console.log(e)
+      var _msg_count = _message_count.toNumber()
+      $('#private_messages_count').text(_msg_count)
+    })
+  },
+  send_private_message:function(_addr, _msg){
+    console.log('send this')
+    App.contracts.BlockChat.send_private_message(_addr, _msg ,{from:App.account, gas: "1530650", gasPrice:"2000000"}, function(e, _response){
+      console.log(e)
+      console.log(_response)
+      App.call_when_mined(_response, function(){
+        console.log("message has been delivered")
+      })
+    })
   },
   get_username:function(_addr){ 
-    // console.log(_addr.toString())
     // console.log(App.account)
     App.contracts.BlockChat.get_username.call(_addr, {from:App.account}, function(e, _username){
+      console.log(_addr)
       if(!e){
         console.log(_username)
         App.username = _username
@@ -86,37 +95,39 @@ App = {
     })
   },
   list_all_rooms:function(){
-    // console.log('lisitng rooms')
-    // App.contracts.BlockChat.get_room_count.call({from: App.account}, function(e, _room_count){
-    //   if(!e){
-    //     var room_count = _room_count.toNumber()
-    //     console.log('Room count :'+ room_count)
-    //     toastr.success('Room Count '+room_count)
-    //     for(let x = 0 ; x < room_count; x++){
-    //       App.get_room_by_index(x, function(result){
-    //         if(!result){
-    //           console.log('error')
-    //         }else{
-    //           console.log(result)
-    //           App.room_list.push(result)
-    //           // App.append_room_to_list(result)
-    //         }
+    console.log('lisitng rooms')
+    App.contracts.BlockChat.get_room_count.call({from: App.account}, function(e, _room_count){
+      if(!e){
+        var room_count = _room_count.toNumber()
+        console.log('Room count :'+ room_count)
+        toastr.success('Room Count '+room_count)
+        for(let x = 0 ; x < room_count; x++){
+          App.get_room_by_index(x, function(result){
+            if(!result){
+              console.log('error')
+              
+            }else{
+              console.log(result)
+              App.room_list.push(result)
+              // App.append_room_to_list(result)
+            }
 
-    //       })
-    //     }
-    //   }else{
-    //     toastr.error(e, 'Failed to get all employees')
-    //     console.log('error.....')
-    //     console.log(e)
-    //   }
-    // })
+          })
+        }
+      }else{
+        toastr.error(e, 'Failed to get all employees')
+        console.log('error.....')
+        console.log(e)
+      }
+    })
   },
   get_room_by_index:function(_index, callback){
-    App.contracts.BlockChat.get_room_by_index.call(_index, function(e, _room){
-      if(!e){
+    App.contracts.BlockChat.get_room_by_index.call(_index, {from:App.account},function(e, _room){
+      if(!e && !_room){
+        console.log('big err')
+      }else if(_room){
+        console.log('no err?')
         callback(_room)
-      }else{
-        callback()
 
       }
     })
@@ -132,11 +143,16 @@ App = {
   append_user_to_user_list:function(_name, _addr, isNew){
     if(isNew === "new"){
       var user_list = $('#user_list')
+      var to_address_select = $('#to_address_select')
       user_list.append(
         `<li data-addr="${_addr}" onclick=App.get_user_info("${_name}")>${_name} - <span class="small-font">${_addr}</span></li>`
         )
+      to_address_select.append(`
+        <option data-option="${_addr}">${_name}</option>
+        `)
     }else{
       $(`[data-addr="${_addr}"]`).html(`${_name} - <span class="small-font">${_addr}</span>`)
+      $(`[data-option="${_addr}"]`).html(`${_name}`)
 
     }
 
@@ -152,6 +168,9 @@ App = {
     App.contracts.BlockChat.get_chat_room_chat_count.call(_room, function(e, _chat_count){
       if(!e){
         console.log(_chat_count)
+        for(let x = 0 ; x < _chat_count;x++){
+          App.get_message_for_room(_room, x)
+        }
       }else{
         console.log(e)
       }
@@ -163,6 +182,15 @@ App = {
       {from: App.account}, function(e, _message){
         if(!e){
           console.log(_message)
+          //0:id, 1:name, 2:time, 3:message, 4:room
+          _msg_obj = {
+            _id:_message[0],
+            _name:_message[1],
+            _time:_message[2],
+            _message:_message[3],
+            _room:_message[4],
+          }
+          App.append_message_to_chat_box(_msg_obj)
 
         }else{
           console.log('error.....')
@@ -172,16 +200,21 @@ App = {
     console.log('end of get all rooms')
   },
   append_message_to_chat_box:function(message_obj){
+    //this data could be storged instead of ignored...
+    console.log(message_obj)
+    if(App.current_room !== message_obj._room) return
     console.log(message_obj)
     var m = message_obj
     var chat = `
-    <p data-id="${m._id.toNumber()}"><span>${m._name}</span>: ${m._message}</p>
+    <p data-id="${m._id.toNumber()}">${m._time}<span>${m._name}</span>: ${m._message}</p>
     `
     $('#chat_box').append(chat)
   },
-  add_new_chatroom:function(_new_chatroom_name){
-    App.contracts.BlockChat.add_new_chatroom(_new_chatroom_name,
-      {from:App.account, gas: "2000000", gasPrice:"2000000000"}, function(e, data){
+  add_new_chatroom:function(_new_chatroom_name, _is_public){
+    console.log(_new_chatroom_name)
+    console.log(_is_public)
+    App.contracts.BlockChat.add_new_chatroom(_new_chatroom_name, _is_public,
+      {from:App.account, gas: "924470", gasPrice:"4000000000"}, function(e, data){
         if(!e){
           console.log(data)
           // var logs = data.logs[0].args
@@ -196,132 +229,196 @@ App = {
 
     add_message:function(_room, _message){
       App.contracts.BlockChat.add_message(_room, _message, {from:App.account, gas: "2000000", gasPrice:"2000000000"}, function(e, data){
-          if(!e){
+        if(!e){
+
+        }else{
+          console.log(e)
+        }
+      })
+    },
+    call_when_mined:function(txHash, callback){
+      web3.eth.getTransactionReceipt(txHash, function(e, r){
+        if(e){console.log(e)}
+          else{
+            if(r==null){
+              setTimeout(function(){
+                App.call_when_mined(txHash, callback)
+              }, 500)
+            }else{
+              callback();
+            }
+          }
+      })
+    },
+    set_UI:function(){
+      var make_new_room_btn = $('#make_new_room_btn');
+      var new_room_name_input = $('#new_room_name_input');
+      var rooms_list = $('#rooms_list');
+      var send_chat_btn = $('#send_chat_btn');
+      var chat_input = $('#chat_input');
+      var set_username_btn= $('#set_username_btn');
+      var username_input = $('#username_input');
+      var send_private_message_btn = $('#send_private_message_btn')
+      var to_address_select = $('#to_address_select');
+
+      // if(App.current_room === ''){
+      //   $('#chat_box_container').classList.add('')
+      // }
+
+      //Event listener for Create New Room button
+      make_new_room_btn.on('click', function(){
+        console.log(new_room_name_input.val())
+        var _safe_name = App.escapeHtml(new_room_name_input.val())
+        var is_public = document.getElementById('room_is_public').checked
+        App.add_new_chatroom(_safe_name, is_public)
+        new_room_name_input.val('')
+      })
+      //Event listener for send chat to roombutton
+      send_chat_btn.on('click', function(){
+        console.log(chat_input.val())
+        var _safe_name = App.escapeHtml(chat_input.val())
+        App.add_message(App.current_room, _safe_name)
+        chat_input.val('')
+      })
+
+      //Event listener for set new name button
+      set_username_btn.on('click', function(){
+        console.log(username_input.val())
+        var _safe_name = App.escapeHtml(username_input.val())
+        App.set_username(_safe_name)
+        username_input.val('')
+      })
+
+      $('#open_private_message_box_btn').on('click', function(){
+        //open private message box
+        $('#private_message_box').toggle("hidden");
+
+      })
+      //Event listener for sending private messages
+      send_private_message_btn.on('click', function(){
+        if($('#private_message_text').val() == ''){ return false}
+        if($('#to_address_private_message').text()==''){return false}
+          console.log('send msg to')
+          var _msg = $('#private_message_text').val()
+          var _addr = $('#to_address_private_message').text()
+          //Reset everything, change as needed... maybe add check box instead
+          $('#private_message_text').val('')
+          $('#to_address_private_message').text('')
+          to_address_select.val('')
+
+          App.send_private_message(_addr, _msg)
+      })
+      $('#close_private_message_box').on('click', function(){
+        console.log('Clocse!!')
+        $('#private_message_box').toggle("hidden");
+
+      })
+
+      //Event listener for selcting user to send private message
+      to_address_select.on('change', function(e){
+        if(e.target.value == ''){
+          $('#to_address_private_message').text('')
+        }else{
+          var addr = $(this).find(':selected').data('option')
+          //updateUI
+          $('#to_address_private_message').text(addr)
+          console.log(e.target.value)
+            
+        }
+         })
+      
+
+      return App.set_watchers()
+    },
+    set_watchers:function(){
+      // event User_joined(string _name);
+      // event New_chat_room_created(string _room, address _addr);
+      // event New_chat_message(string _room, string _name, uint _id_index, string _message);
+      var User_joined_event = App.contracts.BlockChat.User_joined(
+        {}, {fromBlock:0, toBlock:'latest'})
+      User_joined_event.watch(function(e, r){
+        console.log('User_joined_event')
+          if(e){
+            console.log('error')
+            console.log(e)
+          }else if (r){
+            if(App.check_block(r)){
+              console.log(r)
+              var _name = r.args._name
+              var _addr = r.args._addr
+              console.log(App.users[_addr])
+              if(App.users[_addr]){
+                console.log('got this already?')
+                App.append_user_to_user_list(_name, _addr, 'update')
+              }else{
+                console.log('maybe this is  a new one?')
+                App.append_user_to_user_list(_name, _addr, 'new')
+
+              }
+              App.users[_addr] = _name
+              // App.append_user_to_user_list(_name, _addr)
+              // console.log(App.hex2a(r.args._name))
+            }else{
+            }
 
           }else{
-            console.log(e)
+            console.log('User_joined_event error')
           }
         })
-      },
-      set_UI:function(){
-        var make_new_room_btn = $('#make_new_room_btn');
-        var new_room_name_input = $('#new_room_name_input');
-        var rooms_list = $('#rooms_list');
-        var send_chat_btn = $('#send_chat_btn');
-        var chat_input = $('#chat_input');
-        var set_username_btn= $('#set_username_btn');
-        var username_input = $('#username_input');
-
-        make_new_room_btn.on('click', function(){
-          console.log(new_room_name_input.val())
-          var _safe_name = App.escapeHtml(username_input.val())
-
-          App.add_new_chatroom(_safe_name)
-          new_room_name_input.val('')
-        })
-        send_chat_btn.on('click', function(){
-          console.log(chat_input.val())
-          var _safe_name = App.escapeHtml(username_input.val())
-
-          App.add_message(App.current_room, _safe_name)
-          chat_input.val('')
-        })
-        set_username_btn.on('click', function(){
-          console.log(username_input.val())
-          var _safe_name = App.escapeHtml(username_input.val())
-          App.set_username(_safe_name)
-          username_input.val('')
-        })
-
-        return App.set_watchers()
-      },
-      set_watchers:function(){
-        // event User_joined(string _name);
-        // event New_chat_room_created(string _room, address _addr);
-        // event New_chat_message(string _room, string _name, uint _id_index, string _message);
-        var User_joined_event = App.contracts.BlockChat.User_joined(
-          {}, {fromBlock:0, toBlock:'latest'})
-        User_joined_event.watch(function(e, r){
-            if(e){
-              console.log('error')
-              console.log(e)
-            }else if (r){
-              if(App.check_block(r)){
-                console.log(r)
-                var _name = r.args._name
-                var _addr = r.args._addr
-                console.log(App.users[_addr])
-                if(App.users[_addr]){
-                  console.log('got this already?')
-                  App.append_user_to_user_list(_name, _addr, 'update')
-                }else{
-                  console.log('maybe this is  a new one?')
-                  App.append_user_to_user_list(_name, _addr, 'new')
-
-                }
-                App.users[_addr] = _name
-                // App.append_user_to_user_list(_name, _addr)
-                // console.log(App.hex2a(r.args._name))
-                console.log('User_joined_event')
-              }else{
-              }
+      var New_chat_room_created_event = App.contracts.BlockChat.New_chat_room_created(
+        {}, {fromBlock:0, toBlock:'latest'})
+      var x = 0
+      New_chat_room_created_event.watch(function(e, r){
+        console.log('New_chat_room_created_event')
+          if(e){
+            console.log('error')
+            console.log(e)
+          }else if (r){
+            if(App.check_block(r)){
+              console.log(r)
+              var _room = r.args._room
+              var _addr = r.args._addr
+              var _public = r.args._public
+              App.append_room_to_list(_room, _addr, _public)
 
             }else{
-              console.log('User_joined_event error')
+              console.log('preventing dups')
+
             }
-          })
-        var New_chat_room_created_event = App.contracts.BlockChat.New_chat_room_created(
-          {}, {fromBlock:0, toBlock:'latest'})
-        var x = 0
-        New_chat_room_created_event.watch(function(e, r){
-            if(e){
-              console.log('error')
-              console.log(e)
-            }else if (r){
-              if(App.check_block(r)){
-                console.log(r)
-                var _room = r.args._room
-                var _addr = r.args._addr
-                App.append_room_to_list(_room, _addr)
 
-                console.log('New_chat_room_created_event')
-              }else{
-                console.log('preventing dups')
+          }else{
+            console.log('New_chat_room_created_event error')
+          }
+        })
 
-              }
-
+      var New_chat_message_event = App.contracts.BlockChat.New_chat_message(
+        {}, {fromBlock:0, toBlock:'latest'})
+      New_chat_message_event.watch(function(e, r){
+        console.log('New_chat_message_event')
+          if(e){
+            console.log('error')
+            console.log(e)
+          }else if (r){
+            if(App.check_block(r)){
+              console.log(r)
+              var data = r
+              console.log(data)
+              var _id = data.args._id_index
+              var _message = data.args._message
+              var _name = data.args._name
+              var _room = data.args._room
+              var _time = data.args._time
+              App.append_message_to_chat_box({_id, _message, _name, _time, _room})
+              // console.log(App.hex2a(r.args._name))
             }else{
-              console.log('New_chat_room_created_event error')
+              console.log('preventing dups')
+
             }
-          })
 
-        var New_chat_message_event = App.contracts.BlockChat.New_chat_message(
-          {}, {fromBlock:0, toBlock:'latest'})
-        New_chat_message_event.watch(function(e, r){
-            if(e){
-              console.log('error')
-              console.log(e)
-            }else if (r){
-              if(App.check_block(r)){
-                console.log(r)
-                var data = r
-                console.log(data)
-                var _id = data.args._id_index
-                var _message = data.args._message
-                var _name = data.args._name
-                var _room = data.args._room
-                App.append_message_to_chat_box({_id, _message, _name, _room})
-                // console.log(App.hex2a(r.args._name))
-                console.log('New_chat_message_event')
-              }else{
-                console.log('preventing dups')
-
-              }
-
-            }else{
-              console.log('New_chat_message_event error')
-            }
-          })  
+          }else{
+            console.log('New_chat_message_event error')
+          }
+        })  
       },
       check_block:function(block){
         console.log(App.current_block_event === block.blockNumber)

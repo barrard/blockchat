@@ -8,6 +8,20 @@
 </head>
 <body>
   <h1>Block Chat</h1>
+  <div id="private_messages_container">
+    You Got Mail!
+    message count: <span id="private_messages_count"></span>
+    <button id="open_private_message_box_btn">Open Private Messages</button>
+    <div id="private_message_box" class="">
+      <span id="close_private_message_box">X</span>
+      To: <select id="to_address_select">
+            <option></option>
+          </select>
+      <textarea id="private_message_text"></textarea>
+      <button id="send_private_message_btn">Send</button>
+      <span class="small-font" id="to_address_private_message"></span>
+    </div>
+  </div>
 
   <div>
     <p>Account: <span id="ethAccountID"></span></p>
@@ -33,6 +47,13 @@
       />
 
       <button id="make_new_room_btn">Create Room!</button>
+      Public
+      <input
+        id="room_is_public"
+        type="checkbox"
+        name="is_public"
+        value="public"
+      />
     </div>
     <div id="rooms_available">
       <h4>Rooms List</h4>

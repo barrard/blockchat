@@ -29,6 +29,9 @@
 .small-font{
   font-size: 8px;
 }
+.hidden{
+  display: none;
+}
 
 #room_manager{
   border: 1px solid goldenrod;
@@ -41,3 +44,34 @@
 #user_list{
   float: left;
 }
+
+#private_message_box{
+  width: 50%;
+  height: 25%;
+  border: 1px solid lawngreen;
+  position: relative;
+}
+
+#close_private_message_box{
+  position: absolute;
+  border-radius: 25%;
+  padding:2px;
+  top: 0;
+  right: 0;
+  background: rgba(111, 111, 111, 0.9);
+  color:rgba(222, 222, 222, 0.5);
+  transition: all 0.2s ease-in;
+  user-select: none;
+}
+#close_private_message_box:hover{
+  background: rgba(222, 222, 222, 0.5);
+  color: rgba(131, 131, 131, 0.9)
+}
+
+#close_private_message_box:active{
+  background: rgba(222, 1, 1, 0.5);
+  color: rgba(1, 231, 1, 0.9)
+}
+
+
+
