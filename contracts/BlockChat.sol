@@ -1,10 +1,8 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.0;
 
 contract BlockChat{
     uint room_count=0;
     Room_object[] room_array;
-    Room_object _new_room;
-
     
     mapping (string=> mapping (uint=>Chat_object)) All_chats;
     mapping (address=>string) address_to_name;
@@ -70,7 +68,7 @@ contract BlockChat{
     function add_new_chatroom(string _room, bool _public) public{
         require(chats_per_room[_room] < 1);
         chats_per_room[_room] = 0;
-        _new_room;
+        Room_object memory _new_room;
         _new_room._id = room_count;
         _new_room._addr_of_creator = msg.sender;
         _new_room._name = _room;

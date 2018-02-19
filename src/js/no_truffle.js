@@ -3,8 +3,8 @@ App = {
   web3Provider: null,
   contracts: {},
   address:{
-    // BlockChat:"0xe52ae8afac99cef4658a895880af4cd05a4c6204"
-    BlockChat:"0x8e7F76158c681ed4aF55EeB5438FCAA19Fa55BC8"//Rinkeby
+    // BlockChat:"0x5767fa9e3c6eb502208dbb1d86c4a809a96b72bb"
+    BlockChat:"0x98176bBA0Ca5FfD833131D6F045687d87aA9aBe7"//Rinkeby
   },
   abi:{},
   account:'',
@@ -59,7 +59,8 @@ App = {
   },
   send_private_message:function(_addr, _msg){
     console.log('send this')
-    App.contracts.BlockChat.send_private_message(_addr, _msg ,{from:App.account, gas: "1530650", gasPrice:"2000000"}, function(e, _response){
+    App.contracts.BlockChat.send_private_message(_addr, _msg ,
+      {from:App.account, gas: "1530650", gasPrice:"200000000"}, function(e, _response){
       console.log(e)
       console.log(_response)
       App.call_when_mined(_response, function(){

@@ -1,6 +1,383 @@
 current address. on Rinkeby
-0x8e7F76158c681ed4aF55EeB5438FCAA19Fa55BC8
+0x98176bBA0Ca5FfD833131D6F045687d87aA9aBe7
 
 ABI
 
 [ { "constant": true, "inputs": [], "name": "get_private_message_count", "outputs": [ { "name": "", "type": "uint256", "value": "0" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_id", "type": "uint256" } ], "name": "get_allowed_addr_per_room_id", "outputs": [ { "name": "", "type": "address[]", "value": [] } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_index", "type": "uint256" } ], "name": "delete_room", "outputs": [ { "name": "", "type": "bool", "value": false } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_id", "type": "uint256" } ], "name": "get_private_message", "outputs": [ { "name": "", "type": "address" }, { "name": "", "type": "uint256" }, { "name": "", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "get_room_count", "outputs": [ { "name": "", "type": "uint256", "value": "0" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_name", "type": "string" } ], "name": "add_name", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_id", "type": "uint256" }, { "name": "_addr", "type": "address" } ], "name": "add_address_to_private_room", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_chat_room", "type": "string" } ], "name": "get_chat_room_chat_count", "outputs": [ { "name": "", "type": "uint256", "value": "0" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_addr", "type": "address" } ], "name": "get_username", "outputs": [ { "name": "", "type": "string", "value": "" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_chat_room", "type": "string" }, { "name": "_message", "type": "string" } ], "name": "add_message", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_room", "type": "string" }, { "name": "_id", "type": "uint256" } ], "name": "get_message_for_room", "outputs": [ { "name": "", "type": "uint256", "value": "0" }, { "name": "", "type": "string", "value": "" }, { "name": "", "type": "uint256", "value": "0" }, { "name": "", "type": "string", "value": "" }, { "name": "", "type": "string", "value": "" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_room", "type": "string" }, { "name": "_public", "type": "bool" } ], "name": "add_new_chatroom", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_index", "type": "uint256" } ], "name": "get_room_by_index", "outputs": [ { "name": "", "type": "uint256" }, { "name": "", "type": "address" }, { "name": "", "type": "string" }, { "name": "", "type": "uint256" }, { "name": "", "type": "bool" }, { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_to", "type": "address" }, { "name": "_msg", "type": "string" } ], "name": "send_private_message", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "anonymous": false, "inputs": [ { "indexed": false, "name": "_addr", "type": "address" }, { "indexed": false, "name": "_name", "type": "string" } ], "name": "User_joined", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": false, "name": "_room", "type": "string" }, { "indexed": false, "name": "_addr", "type": "address" }, { "indexed": false, "name": "_public", "type": "bool" } ], "name": "New_chat_room_created", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": false, "name": "_room", "type": "string" }, { "indexed": false, "name": "_name", "type": "string" }, { "indexed": false, "name": "_id_index", "type": "uint256" }, { "indexed": false, "name": "_message", "type": "string" }, { "indexed": false, "name": "_time", "type": "uint256" } ], "name": "New_chat_message", "type": "event" } ]
+
+
+remix ABI
+
+[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "get_private_message_count",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_allowed_addr_per_room_id",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "delete_room",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_private_message",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "get_room_count",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "add_name",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      },
+      {
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "add_address_to_private_room",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_chat_room",
+        "type": "string"
+      }
+    ],
+    "name": "get_chat_room_chat_count",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "get_username",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_chat_room",
+        "type": "string"
+      },
+      {
+        "name": "_message",
+        "type": "string"
+      }
+    ],
+    "name": "add_message",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_room",
+        "type": "string"
+      },
+      {
+        "name": "_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_message_for_room",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "string"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "string"
+      },
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_room",
+        "type": "string"
+      },
+      {
+        "name": "_public",
+        "type": "bool"
+      }
+    ],
+    "name": "add_new_chatroom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "get_room_by_index",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "string"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_msg",
+        "type": "string"
+      }
+    ],
+    "name": "send_private_message",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "_addr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "User_joined",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "_room",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "_addr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_public",
+        "type": "bool"
+      }
+    ],
+    "name": "New_chat_room_created",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "_room",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "_id_index",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "_message",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "_time",
+        "type": "uint256"
+      }
+    ],
+    "name": "New_chat_message",
+    "type": "event"
+  }
+]
