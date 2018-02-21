@@ -6,6 +6,7 @@ App = {
     // BlockChat:"0x5767fa9e3c6eb502208dbb1d86c4a809a96b72bb"
     BlockChat:"0x094Bd1256587e3C566eB9F35725f97C7AEF23622"//Rinkeby
   },
+  block_hash:[],
   abi:{},
   account:'',
   room_list:[],
@@ -89,6 +90,9 @@ App = {
         App.username = _name
         console.log(name_added)
         $('#user_name').text(_name)
+        App.call_when_mined(name_added, function(){
+          console.log("Username is set")
+        })
       }else{
         console.log('error.....')
         console.log(e)
@@ -162,8 +166,11 @@ App = {
   set_room:function(_room){
     console.log(_room)
     App.current_room = _room
+    $('#chat_box_container').removeClass('hidden')
+
     $('#current_room').text(_room)
     App.get_chats_for_room(_room)
+    $('#chat_box').html('')
   },
   get_chats_for_room:function(_room){
     App.contracts.BlockChat.get_chat_room_chat_count.call(_room, function(e, _chat_count){
@@ -202,7 +209,7 @@ App = {
   },
   append_message_to_chat_box:function(message_obj){
     //this data could be storged instead of ignored...
-    console.log(message_obj)
+    // console.log(message_obj)
     if(App.current_room !== message_obj._room) return
     console.log(message_obj)
     var m = message_obj
@@ -262,9 +269,12 @@ App = {
       var send_private_message_btn = $('#send_private_message_btn')
       var to_address_select = $('#to_address_select');
 
-      // if(App.current_room === ''){
-      //   $('#chat_box_container').classList.add('')
-      // }
+      if(App.current_room === ''){
+        // $('#chat_box_container').classList.add('')
+      }else{
+        $('#chat_box_container').toggle('hidden')
+
+      }
 
       //Event listener for Create New Room button
       make_new_room_btn.on('click', function(){
@@ -400,8 +410,8 @@ App = {
             console.log('error')
             console.log(e)
           }else if (r){
-            if(App.check_block(r)){
-              console.log(r)
+            if(App.check_block(r.blockHash)){
+              // console.log(r)
               var data = r
               console.log(data)
               var _id = data.args._id_index
@@ -421,17 +431,13 @@ App = {
           }
         })  
       },
-      check_block:function(block){
-        console.log(App.current_block_event === block.blockNumber)
-        if(App.current_block_event === block.blockNumber){
-          console.log('same')
-          return false
-        }else{
-          App.current_block_event = block.blockNumber
-          console.log('set to new block, this should run some coooode yeeaaahhhh')
+      check_block:function(_blockHash){
+        if( App.block_hash.indexOf(_blockHash) === -1){
+          App.block_hash.push(_blockHash)
           return true
+        }else{
+          return false
         }
-        console.log(App.current_block_event === block.blockNumber)
         console.log(block.blockNumber)
       },
       escapeHtml:function(_string){
