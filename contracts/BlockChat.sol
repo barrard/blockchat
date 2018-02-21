@@ -2,8 +2,8 @@ pragma solidity ^0.4.18;
 
 contract BlockChat{
     uint room_count=0;
-    Room_object[] room_array;
-    Room_object _new_room;
+    // Room_object[] room_array;
+    // Room_object _new_room;
 
     
     mapping (string=> mapping (uint=>Chat_object)) All_chats;
@@ -11,6 +11,8 @@ contract BlockChat{
     mapping (string=>uint) chats_per_room;
     mapping (address=>uint) address_to_private_mesage_count;
     mapping (address=>Private_massage_obect[]) address_to_private_mesages_array;
+    mapping (uint=>string) id_to_room_mapping;
+    mapping (string=>uint) room_to_id_mapping;
 
     event User_joined(address _addr, string _name);
     event New_chat_room_created(string _room, address _addr, bool _public);
@@ -59,7 +61,7 @@ contract BlockChat{
     }
     
     function get_private_message(uint _id) public view returns (address, uint, string){
-        Private_massage_obect storage _pmo = address_to_private_mesages_array[msg.sender][_id];
+        Private_massage_obect memory _pmo = address_to_private_mesages_array[msg.sender][_id];
         return (_pmo._from, _pmo._time, _pmo._message);
     }
 
@@ -70,27 +72,30 @@ contract BlockChat{
     function add_new_chatroom(string _room, bool _public) public{
         require(chats_per_room[_room] < 1);
         chats_per_room[_room] = 0;
-        Room_object storage _new_room;
+        Room_object storage _new_room = id_to_room_mapping[room_count];
         _new_room._id = room_count;
         _new_room._addr_of_creator = msg.sender;
         _new_room._name = _room;
         _new_room._date = now;
         _new_room._public = _public;
-        room_array[room_count] = _new_room;
+        _new_room._alowed_if_not_public=[];
+        room_to_id_mapping[_room]= room_count;
+        // room_array[room_count] = _new_room;
         room_count++;
         New_chat_room_created(_room, msg.sender, _public);
         
     }
 
     function get_room_by_index (uint _index) constant public returns(uint, address, string, uint, bool, address[]) {
-        Room_object memory _ro = room_array[_index];
+        Room_object memory _ro = room_to_id_mapping[_index];
         return (_ro._id, _ro._addr_of_creator, _ro._name, _ro._date, _ro._public, _ro._alowed_if_not_public);        
     }
     
     function delete_room(uint _index) public view returns(bool){
-        Room_object memory _ro = room_array[_index];
+        Room_object memory _ro = room_to_id_mapping[_index];
         address _owner = _ro._addr_of_creator;
         if(_owner == msg.sender){
+            chats_per_room[_ro._name] = 0;
             return true;
         }else{
             return false;    
@@ -127,7 +132,7 @@ contract BlockChat{
     }
     
     function add_address_to_private_room(uint _id, address _addr) public returns(bool){
-        Room_object storage _ro = room_array[_id];
+        Room_object storage _ro = id_to_room_mapping[_id];
         if(_ro._addr_of_creator == msg.sender){
             _ro._alowed_if_not_public.push(_addr);
         }else{
@@ -135,7 +140,7 @@ contract BlockChat{
         }
     }
     function get_allowed_addr_per_room_id(uint _id) public view returns(address[]){
-        Room_object memory _ro = room_array[_id];
+        Room_object memory _ro = id_to_room_mapping[_id];
         address[] memory _fake;
         
         for (uint x = 0 ; x< _ro._alowed_if_not_public.length; x++ ){
