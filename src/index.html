@@ -5,14 +5,17 @@
   <title>Block Chat</title>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <link rel="stylesheet" type="text/css" href="css/css.css">
+  <link rel="stylesheet" type="text/css" href="css/animate.css">
 </head>
 <body>
   <h1>Block Chat</h1>
   <div id="private_messages_container">
-    You Got Mail!
-    message count: <span id="private_messages_count"></span>
+    You Got Mail! <br>
+    <!-- <button id="watch_for_new_messages"></button> -->
+    message count: <div class="inline" id="private_messages_count"></div>
     <button id="open_private_message_box_btn">Open Private Messages</button>
     <div id="private_message_box" class="">
+      Send private message
       <span id="close_private_message_box">X</span>
       To: <select id="to_address_select">
             <option></option>
@@ -20,6 +23,11 @@
       <textarea id="private_message_text"></textarea>
       <button id="send_private_message_btn">Send</button>
       <span class="small-font" id="to_address_private_message"></span>
+      <hr>
+      Your private messages
+      <ul id="my_private_messages" class="inline">
+
+      </ul>
     </div>
   </div>
 
@@ -38,9 +46,9 @@
     <p>Current Balance <span id="currentBalance"></span></p>
   </div>
 
-  <h3>Rooom <span id="current_room"></span></h3>
 
-  <div id="room_manager">
+  <div id="room_manager" class="hidden">
+    <h3>Rooom <span id="current_room"></span></h3>
     <div id="create_room_container">
       <input id="new_room_name_input"
 
@@ -57,7 +65,7 @@
     </div>
     <div id="rooms_available">
       <h4>Rooms List</h4>
-      <ul id="rooms_list">
+      <ul id="rooms_list" >
 
       </ul>
 
@@ -91,6 +99,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
   <script src="js/web3.js"></script>
   <script src="js/no_truffle.js"></script>
+  <script src="js/no_truffle2.js"></script>
   <!-- <script src="js/truffle-contract.js"></script> -->
 
   <!-- <script src="js/js.js"></script> -->

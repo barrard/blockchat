@@ -3,8 +3,8 @@ App = {
   web3Provider: null,
   contracts: {},
   address:{
-    // BlockChat:"0x5767fa9e3c6eb502208dbb1d86c4a809a96b72bb"
-    BlockChat:"0x094Bd1256587e3C566eB9F35725f97C7AEF23622"//Rinkeby
+    // BlockChat:"0x9b77083f0fcee81e3c0f7c3ea421dff76fe07fbf"
+    BlockChat:"0xdaAa3F77a70566ACA24380bf0189c03A792a488F"//Rinkeby
   },
   block_hash:[],
   abi:{},
@@ -13,7 +13,7 @@ App = {
   current_room:'',
   username:'',
   users:{},
-  current_block_event:0,
+  private_messages:[],
 
   init: function() {
 
@@ -25,7 +25,7 @@ App = {
       App.web3Provider = web3.currentProvider;
     } else {
       // If no injected web3 instance is detected, fall back to Ganache
-      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+      App.web3Provider = new Web3.providers.HttpProvider('http://192.168.0.93:8545');
     }
     web3 = new Web3(App.web3Provider);
     web3.eth.getAccounts(function(e, r){
@@ -45,18 +45,44 @@ App = {
     $.getJSON('BlockChat.json', function(data) {
       App.abi.BlockChat = web3.eth.contract(data)
       App.contracts.BlockChat = App.abi.BlockChat.at(App.address.BlockChat)
-      App.list_all_rooms()
-      App.get_username(App.account)
+      App.get_username(App.account)//This calls the setUI function
       App.get_private_messages()
-      return App.set_UI();
     });  
   },
   get_private_messages:function(){
     App.contracts.BlockChat.get_private_message_count.call( {from:App.account}, function(e, _message_count){
       console.log(e)
-      var _msg_count = _message_count.toNumber()
-      $('#private_messages_count').text(_msg_count)
+      var _msg_count = _message_count.toNumber();
+      $('#private_messages_count').text(_msg_count);
+      App2.private_message_count = _msg_count;
+      for(let x = 0 ; x < _msg_count ; x++){
+        App.contracts.BlockChat.get_private_message.call( x,   {from:App.account}, function(e, _msg){
+          if(!e){
+            console.log(_msg)
+            App.private_messages.push(_msg)
+            App2.append_private_message_to_list(_msg)
+          }else{
+              console.log('e'); console.log(e)
+          }
+        })
+
+      }
+
     })
+  },
+  get_private_message_by_index:function(_index){
+        App.contracts.BlockChat.get_private_message.call( _index,   {from:App.account}, function(e, _msg){
+          if(!e){
+            console.log(_msg)
+            App.private_messages.push(_msg)
+            App2.append_private_message_to_list(_msg)
+          }else{
+              console.log('e'); console.log(e)
+          }
+        })
+
+      
+
   },
   send_private_message:function(_addr, _msg){
     console.log('send this')
@@ -81,6 +107,8 @@ App = {
         console.log('error.....')
         console.log(e)
       }
+      return App.set_UI();
+
     })
 
   },
@@ -92,6 +120,9 @@ App = {
         $('#user_name').text(_name)
         App.call_when_mined(name_added, function(){
           console.log("Username is set")
+          $('#room_manager').removeClass('hidden')
+          App.check_if_current_room_set();
+
         })
       }else{
         console.log('error.....')
@@ -137,11 +168,13 @@ App = {
       }
     })
   },
-  append_room_to_list:function(_room, _sender){
+  append_room_to_list:function(_room, _sender, _public){
     console.log('APPENDING THE ROOM '+_room)
     var rooms_list = $('#rooms_list')
+    var style = ``;
+    _public ? style = "is_public_room" : style = "not_public_room"
     rooms_list.append(
-      `<li data-sender='${_sender}' onclick="App.set_room('${_room}')">${_room}</li>`
+      `<li class="${style}" data-sender='${_sender}' onclick="App.set_room('${_room}')">${_room}</li>`
       )
 
   },
@@ -229,6 +262,9 @@ App = {
           // var _sender = logs._addr
           // var _room = logs._room
           // App.append_room_to_list(_room, _sender)
+          App.call_when_mined(data, function(){
+            console.log('new chat room aded')
+          })
         }else{
           console.log(e)
         }
@@ -258,6 +294,31 @@ App = {
           }
       })
     },
+    check_if_username_set:function(){
+      if(App.username === ''){
+        toastr.info('please enter you username')
+        App.handle_animation('username_input', 'bounce')
+        App.handle_animation('set_username_btn', 'wobble')
+      }else{
+        $('#room_manager').toggle('hidden')
+        toastr.info('Name set to '+App.username)
+        App.check_if_current_room_set();
+      }
+    },
+    check_if_current_room_set:function(){
+      if(App.current_room === ''){
+        App.handle_animation('rooms_available', 'bounce')
+        App.handle_animation('make_new_room_btn', 'wobble')
+        App.handle_animation('new_room_name_input', 'swing')
+        App.handle_animation('room_manager', 'slineInLeft')
+        toastr.info('please select a room')
+        App.list_all_rooms()
+
+
+      }else{
+        $('#chat_box_container').toggle('hidden')
+      }
+    },
     set_UI:function(){
       var make_new_room_btn = $('#make_new_room_btn');
       var new_room_name_input = $('#new_room_name_input');
@@ -269,12 +330,10 @@ App = {
       var send_private_message_btn = $('#send_private_message_btn')
       var to_address_select = $('#to_address_select');
 
-      if(App.current_room === ''){
-        // $('#chat_box_container').classList.add('')
-      }else{
-        $('#chat_box_container').toggle('hidden')
+      //check for basic user info to be set
+      App.check_if_username_set();
 
-      }
+
 
       //Event listener for Create New Room button
       make_new_room_btn.on('click', function(){
@@ -378,7 +437,6 @@ App = {
         })
       var New_chat_room_created_event = App.contracts.BlockChat.New_chat_room_created(
         {}, {fromBlock:0, toBlock:'latest'})
-      var x = 0
       New_chat_room_created_event.watch(function(e, r){
         console.log('New_chat_room_created_event')
           if(e){
@@ -455,6 +513,18 @@ App = {
         return String(_string).replace(/[&<>"'`=\/]/g, function (s) {
           return entityMap[s];
         });
+      },
+      handle_animation:function(_element, animation){
+        var element = document.getElementById(_element)
+        function remove_animation_class(){
+          console.log('animation over')
+          element.classList.remove('animated', animation)
+          element.removeEventListener('animationend', remove_animation_class)
+        }
+        
+        element.addEventListener('animationend', remove_animation_class)
+
+        element.classList.add('animated', animation)
       }
 }
 
