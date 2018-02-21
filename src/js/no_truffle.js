@@ -4,7 +4,7 @@ App = {
   contracts: {},
   address:{
     // BlockChat:"0x5767fa9e3c6eb502208dbb1d86c4a809a96b72bb"
-    BlockChat:"0x98176bBA0Ca5FfD833131D6F045687d87aA9aBe7"//Rinkeby
+    BlockChat:"0xDfeC2532cfB093dc0363C8A1f77B6182f02Cd55F"//Rinkeby
   },
   abi:{},
   account:'',
