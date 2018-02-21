@@ -145,7 +145,7 @@ App = {
             }else{
               console.log(result)
               App.room_list.push(result)
-              // App.append_room_to_list(result)
+              App.append_room_to_list(result[2], result[1], result[4])
             }
 
           })
